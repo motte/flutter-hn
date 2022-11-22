@@ -1,6 +1,6 @@
 # flutter_hn
 
-A new Flutter project.
+Flutter-based HackerNews app.
 
 ## Getting Started
 

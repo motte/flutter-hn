@@ -1,4 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:flutter/cupertino.dart';
+import 'dart:io' show Platform;
+
+final materialThemeData = ThemeData(
+    primarySwatch: Colors.blue,
+    scaffoldBackgroundColor: Colors.white,
+    appBarTheme: AppBarTheme(color: Colors.blue.shade600),
+    primaryColor: Colors.blue,
+    secondaryHeaderColor: Colors.blue,
+    canvasColor: Colors.blue,
+    backgroundColor: Colors.red,
+    // textTheme: TextTheme().copyWith(body1: TextTheme().body1)
+    );
+final cupertinoTheme = CupertinoThemeData(
+    primaryColor: Colors.blue,
+    barBackgroundColor: Colors.blue,
+    scaffoldBackgroundColor: Colors.white);
 
 void main() {
   runApp(const MyApp());
@@ -10,24 +28,16 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    return PlatformApp(
+      // 1. The first option hides the debug banner on the toolbar.
+      debugShowCheckedModeBanner: false,
+      material: (_, __)  => MaterialAppData(theme: materialThemeData),
+      cupertino: (_, __) => CupertinoAppData(theme: cupertinoTheme),
+      home: const MyHomePage(title: 'Flutter HN'),
     );
   }
 }
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -69,8 +79,8 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
+    return PlatformScaffold(
+      appBar: PlatformAppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
@@ -95,6 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Spacer(),
             const Text(
               'You have pushed the button this many times:',
             ),
@@ -102,14 +113,34 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
+            Spacer(),
+            if (Platform.isAndroid)
+              Row(
+                children: <Widget>[
+                  Spacer(),
+                  PlatformIconButton(
+                    onPressed: _incrementCounter,
+                    materialIcon: Icon(Icons.add_circle),
+                    padding: EdgeInsets.fromLTRB(0, 0, 24, 24),
+                    cupertinoIcon: Icon(
+                      CupertinoIcons.add_circled_solid,
+                      size: 48.0,
+                    ),
+                  ),
+                ],
+              ),
+            if (Platform.isIOS)
+              PlatformTextButton(
+                onPressed: _incrementCounter,
+                child: Text("+ Increment", style: TextStyle(color: Colors.white)),
+                color: Colors.blue,
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 0, 0, 64),
+              )
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
